@@ -7,6 +7,8 @@ var markerRoot1, markerRoot2;
 
 var mesh1;
 
+var controlsOn = false;
+
 function webGLStart(){
 	initialize();
 	animate();
@@ -89,10 +91,28 @@ function initialize()
 	let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
 		type: 'pattern', patternUrl: "data/hiro.patt",
 	})
-	
+	markerRoot2 = new THREE.Group();
+	scene.add(markerRoot2);
+	let markerControls2 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot2, {
+		type: 'pattern', patternUrl: "data/kanji.patt",
+	})
+
 	mesh = doHole();
 
 	markerRoot1.add( mesh );
+}
+
+function doPokeBall(){
+	let geometry1	= new THREE.SphereGeometry(1,10,10);
+	let material1	= new THREE.MeshNormalMaterial({
+		transparent: true,
+		opacity: 0.5,
+		side: THREE.DoubleSide
+	}); 
+	
+	mesh = new THREE.Mesh( geometry1, material1 );
+	mesh.position.y = 0.5;
+	return mesh;
 }
 
 function doBox(){
@@ -104,7 +124,7 @@ function doBox(){
 	}); 
 	
 	mesh = new THREE.Mesh( geometry1, material1 );
-	mesh.position.y = 0.5;
+	mesh.position.y = -10;
 	return mesh;
 }
 
@@ -145,6 +165,15 @@ function update()
 	// update artoolkit on every frame
 	if ( arToolkitSource.ready !== false )
 		arToolkitContext.update( arToolkitSource.domElement );
+	
+	if (markerRoot1.visible && markerRoot2.visible){
+		let obj = markerRoot1.children[0];
+		obj.rotation.y += 0.055;
+		obj.position.y = (obj.position.y <= 1 ) ? obj.position.y += 0.1 : obj.position.y;
+		controlsOn = true;
+	}else{
+		constrolsOn = false;
+	}
 }
 
 
